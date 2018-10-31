@@ -12,8 +12,8 @@
 
 import * as crypto from 'crypto';
 
-function zeros(length: number): string {
-  return Buffer.alloc(length, 0).toString();
+function zeros(length: number): Buffer {
+  return Buffer.alloc(length, 0);
 }
 
 export class HKDF {
@@ -23,7 +23,7 @@ export class HKDF {
   // imk is initial keying material
   constructor(
     private readonly hashAlg: string,
-    private readonly salt: string,
+    private readonly salt: Buffer,
     private readonly ikm: string,
   ) {
     this.hashAlg = hashAlg;

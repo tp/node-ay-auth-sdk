@@ -7,7 +7,7 @@ test('Match PHP Reference Implementation', async () => {
     createASRParameter(
       {
         appSecret: 'lsdj2}ßßäoAA$$$2356as',
-        salt: '1234567890123456',
+        salt: Buffer.from('1234567890123456'),
         info: 'singService Test',
       },
       {

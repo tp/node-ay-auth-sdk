@@ -2,12 +2,12 @@ import * as crypto from 'crypto';
 import {HKDF} from './lib/hkdf';
 import {base64Encode} from './lib/base64Encode';
 
-function createSalt(length: number): string {
-  return crypto.randomBytes(length).toString('hex');
+function createSalt(length: number): Buffer {
+  return crypto.randomBytes(length);
 }
 
 export function createASRParameter(
-  params: {appSecret: string; info: string; salt?: string},
+  params: {appSecret: string; info: string; salt?: Buffer},
   payload: any,
 ) {
   const salt = params.salt || createSalt(16);
@@ -18,7 +18,7 @@ export function createASRParameter(
   const data = JSON.stringify({
     ...payload,
     info: params.info,
-    salt: base64Encode(salt),
+    salt: salt.toString('base64'),
   });
 
   const payloadBase64String = base64Encode(data);
@@ -33,11 +33,12 @@ export function createASRParameter(
 
   // From PHP implementation
   //   $enc = rtrim($enc, "=");
-  //   $enc = strtr($enc, ;
+  //   $enc = strtr($enc, "+/", "-_");
   const signature = hmac
     .digest('base64')
     .replace(/(=)*$/g, '')
-    .replace('+/', '-_');
+    .replace(/\//g, '_')
+    .replace(/\+/g, '-');
 
   return `${version}.${payloadBase64String}.${signature}`;
 }
